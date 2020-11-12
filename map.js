@@ -44,7 +44,7 @@ map.on("load", function () {
         ["get", "point_count"],
         "#51bbd6",
         100,
-        "#f1f075",
+        "#f30ffa",
         750,
         "#f28cb1",
       ],
