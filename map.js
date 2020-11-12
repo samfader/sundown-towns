@@ -104,7 +104,7 @@ map.on("load", function () {
 
     new mapboxgl.Popup()
       .setLngLat(coordinates)
-      .setHTML(name + ", " + state + "<br><a href='https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}'>Click here for more</a>")
+      .setHTML(name + ", " + state + `<br><a href='https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}'>Click here for more</a>`)
       .addTo(map);
     // window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
   });
