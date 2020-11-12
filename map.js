@@ -5,6 +5,8 @@ var map = new mapboxgl.Map({
   style: "mapbox://styles/samf/ckfguixbm2aee19ppd5s2d36l",
   center: [-99.829, 38.826],
   zoom: 3.8,
+  pitchWithRotate: false,
+  dragRotate: false,
   maxBounds: [
     [-130.78125, 22.367113562651262],
     [-61.17187499999999, 50.90303283111257],
@@ -22,56 +24,16 @@ map.addControl(
 map.on("load", function () {
   map.addSource("towns-data", {
     type: "geojson",
-    data: "./towns.geojson",
-    cluster: true,
-    clusterMaxZoom: 14,
-    clusterRadius: 50,
+    data: "./towns.geojson"
   });
 
   map.addLayer({
-    id: "clusters",
+    id: "towns",
     type: "circle",
     source: "towns-data",
-    filter: ["has", "point_count"],
-    paint: {
-      // Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
-      // with three steps to implement three types of circles:
-      //   * Blue, 20px circles when point count is less than 100
-      //   * Yellow, 30px circles when point count is between 100 and 750
-      //   * Pink, 40px circles when point count is greater than or equal to 750
-      "circle-color": [
-        "step",
-        ["get", "point_count"],
-        "#51bbd6",
-        100,
-        "#f30ffa",
-        750,
-        "#f28cb1",
-      ],
-      "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
-    },
-  });
-
-  map.addLayer({
-    id: "cluster-count",
-    type: "symbol",
-    source: "towns-data",
-    filter: ["has", "point_count"],
-    layout: {
-      "text-field": "{point_count_abbreviated}",
-      "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-      "text-size": 12,
-    },
-  });
-
-  map.addLayer({
-    id: "unclustered-point",
-    type: "circle",
-    source: "towns-data",
-    filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-color": "#11b4da",
-      "circle-radius": 4,
+      "circle-radius": 6,
       "circle-stroke-width": 1,
       "circle-stroke-color": "#fff",
     },
@@ -94,7 +56,7 @@ map.on("load", function () {
       });
   });
 
-  map.on("click", "unclustered-point", function (e) {
+  map.on("click", "towns", function (e) {
     var coordinates = e.features[0].geometry.coordinates.slice();
     var features = map.queryRenderedFeatures(e.point);
     console.log(features[0]);
@@ -109,17 +71,10 @@ map.on("load", function () {
     // window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
   });
 
-  map.on("mouseenter", "clusters", function () {
+  map.on("mouseenter", "towns", function () {
     map.getCanvas().style.cursor = "pointer";
   });
-  map.on("mouseleave", "clusters", function () {
-    map.getCanvas().style.cursor = "";
-  });
-
-  map.on("mouseenter", "unclustered-point", function () {
-    map.getCanvas().style.cursor = "pointer";
-  });
-  map.on("mouseleave", "unclustered-point", function () {
+  map.on("mouseleave", "towns", function () {
     map.getCanvas().style.cursor = "";
   });
 });
