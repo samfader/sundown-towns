@@ -95,9 +95,18 @@ map.on("load", function () {
   });
 
   map.on("click", "unclustered-point", function (e) {
+    var coordinates = e.features[0].geometry.coordinates.slice();
     var features = map.queryRenderedFeatures(e.point);
-    id = features[0].id;
-    window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
+    console.log(features[0]);
+    var id = features[0].id;
+    var name = features[0].properties.name;
+    var state = features[0].properties.state;
+
+    new mapboxgl.Popup()
+      .setLngLat(coordinates)
+      .setHTML(name + ", " + state + "<br><a href='https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}'>Click here for more</a>")
+      .addTo(map);
+    // window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
   });
 
   map.on("mouseenter", "clusters", function () {
