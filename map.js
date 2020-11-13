@@ -32,29 +32,13 @@ map.on("load", function () {
     type: "circle",
     source: "towns-data",
     paint: {
-      "circle-color": "#11b4da",
+      "circle-color": "#990000",
       "circle-radius": 6,
       "circle-stroke-width": 1,
       "circle-stroke-color": "#fff",
+      "circle-opacity": 0.75
     },
-  });
-
-  map.on("click", "clusters", function (e) {
-    var features = map.queryRenderedFeatures(e.point, {
-      layers: ["clusters"],
-    });
-    var clusterId = features[0].properties.cluster_id;
-    map
-      .getSource("towns-data")
-      .getClusterExpansionZoom(clusterId, function (err, zoom) {
-        if (err) return;
-
-        map.easeTo({
-          center: features[0].geometry.coordinates,
-          zoom: zoom,
-        });
-      });
-  });
+  }, 'settlement-subdivision-label' );
 
   map.on("click", "towns", function (e) {
     var coordinates = e.features[0].geometry.coordinates.slice();
@@ -69,6 +53,17 @@ map.on("load", function () {
       .setHTML(name + ", " + state + `<br><a href='https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}'>Click here for more</a>`)
       .addTo(map);
     // window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
+  });
+
+  map.on('mousemove', 'towns', function(e) {
+    var features = map.queryRenderedFeatures(e.point, { layers: ['towns'] });
+    if (!features.length) {
+      map.getCanvas().style.cursor = '';
+      map.setPaintProperty('towns', 'circle-radius', 6);
+      return
+    }
+
+    map.setPaintProperty('towns', 'circle-radius', ['match', ['get', 'name'], features[0].properties.name, 10, 6]);
   });
 
   map.on("mouseenter", "towns", function () {
