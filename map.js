@@ -13,6 +13,8 @@ var map = new mapboxgl.Map({
   ],
 });
 
+let dataUrl = 'https://json-loewen-sundown-towns.pantheonsite.io/sundown/database/geojson.php?'
+
 map.addControl(
   new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
@@ -24,7 +26,7 @@ map.addControl(
 map.on("load", function () {
   map.addSource("towns-data", {
     type: "geojson",
-    data: "./towns.geojson"
+    data: dataUrl
   });
 
   map.addLayer({
@@ -32,7 +34,36 @@ map.on("load", function () {
     type: "circle",
     source: "towns-data",
     paint: {
-      "circle-color": "#990000",
+      "circle-color": [
+        "case",
+        ["has", "confirmed"],
+        [
+          "interpolate",
+          ["linear"],
+          ["get", "confirmed"],
+          0,
+          "hsl(0, 28%, 71%)",
+          5,
+          "hsl(0, 100%, 30%)"
+        ],
+        [
+          "match",
+          ["get", "ordinance"],
+          ["0"],
+          false,
+          true
+        ],
+        "#4a36e2",
+        [
+          "match",
+          ["get", "sign"],
+          ["0"],
+          false,
+          true
+        ],
+        "#4a36e2",
+        "#990000"
+      ],
       "circle-radius": 6,
       "circle-stroke-width": 1,
       "circle-stroke-color": "#fff",
@@ -47,10 +78,13 @@ map.on("load", function () {
     var id = features[0].id;
     var name = features[0].properties.name;
     var state = features[0].properties.state;
+    var confirmed = features[0].properties.confirmed;
+    var ordinance = features[0].properties.ordinance;
+    var sign = features[0].properties.sign;
 
     new mapboxgl.Popup()
       .setLngLat(coordinates)
-      .setHTML(name + ", " + state + `<br><a href='https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}'>Click here for more</a>`)
+      .setHTML(name + ", " + state + `<br><a href='https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}'>Click here for more</a>` + '<br><br>' + `Confirmed: ${confirmed}` + '<br>' + `Ordinance: ${ordinance}` + '<br>' + `Sign: ${sign}`)
       .addTo(map);
     // window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
   });
