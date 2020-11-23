@@ -23,6 +23,9 @@ map.addControl(
   })
 );
 
+var nav = new mapboxgl.NavigationControl();
+map.addControl(nav, 'top-left');
+
 map.on("load", function () {
   map.addSource("towns-data", {
     type: "geojson",
