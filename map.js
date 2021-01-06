@@ -3,12 +3,12 @@ mapboxgl.accessToken =
 var map = new mapboxgl.Map({
   container: "map",
   style: "mapbox://styles/samf/ckfguixbm2aee19ppd5s2d36l",
-  center: [-99.829, 38.826],
-  zoom: 3.8,
+  center: [-96.829, 38.826],
+  zoom: 4.3,
   pitchWithRotate: false,
   dragRotate: false,
   maxBounds: [
-    [-130.78125, 22.367113562651262],
+    [-135.78125, 22.367113562651262],
     [-61.17187499999999, 50.90303283111257],
   ],
 });
@@ -41,30 +41,22 @@ map.on("load", function () {
         "case",
         ["has", "confirmed"],
         [
-          "interpolate",
-          ["linear"],
+          "step",
           ["get", "confirmed"],
-          0,
-          "hsl(0, 28%, 71%)",
-          5,
-          "hsl(0, 100%, 30%)"
+          "hsl(0, 0%, 82%)",
+          1,
+          "hsl(0, 0%, 72%)",
+          2,
+          "hsl(0, 0%, 56%)",
+          3,
+          "hsl(0, 0%, 43%)",
+          4,
+          "hsl(0, 0%, 33%)",
+          8,
+          "hsl(0, 0%, 17%)",
+          9,
+          "#000000"
         ],
-        [
-          "match",
-          ["get", "ordinance"],
-          ["0"],
-          false,
-          true
-        ],
-        "#4a36e2",
-        [
-          "match",
-          ["get", "sign"],
-          ["0"],
-          false,
-          true
-        ],
-        "#4a36e2",
         "#990000"
       ],
       "circle-radius": 6,
@@ -74,10 +66,28 @@ map.on("load", function () {
     },
   }, 'settlement-subdivision-label' );
 
-  map.on("click", "towns", function (e) {
+  var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+  });
+
+  var confirmedDescription = {0: "Don't know",1:"Unlikely", 2:"Possible", 3:"Probable", 4:"Surely", 8:"Always biracial", 9:"Black Town or Township", undefined:"Don't know", null:"Don't know"};
+
+  // map.on('mousemove', 'towns', function(e) {
+  //   var features = map.queryRenderedFeatures(e.point, { layers: ['towns'] });
+  //   if (!features.length) {
+  //     map.getCanvas().style.cursor = '';
+  //     map.setPaintProperty('towns', 'circle-radius', 6);
+  //     return
+  //   }
+
+  //   map.setPaintProperty('towns', 'circle-radius', ['match', ['get', 'name'], features[0].properties.name, 10, 6]);
+  // });
+
+  map.on("mouseenter", "towns", function (e) {
+    map.getCanvas().style.cursor = "pointer";
     var coordinates = e.features[0].geometry.coordinates.slice();
     var features = map.queryRenderedFeatures(e.point);
-    console.log(features[0]);
     var id = features[0].id;
     var name = features[0].properties.name;
     var state = features[0].properties.state;
@@ -85,28 +95,21 @@ map.on("load", function () {
     var ordinance = features[0].properties.ordinance;
     var sign = features[0].properties.sign;
 
-    new mapboxgl.Popup()
+    popup
       .setLngLat(coordinates)
-      .setHTML(name + ", " + state + `<br><a href='https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}'>Click here for more</a>` + '<br><br>' + `Confirmed: ${confirmed}` + '<br>' + `Ordinance: ${ordinance}` + '<br>' + `Sign: ${sign}`)
+      .setHTML(name + ", " + state + '<br>' + `Confirmed: ${confirmedDescription[confirmed]}` + '<br><br>Click for more information')
       .addTo(map);
     // window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
   });
 
-  map.on('mousemove', 'towns', function(e) {
-    var features = map.queryRenderedFeatures(e.point, { layers: ['towns'] });
-    if (!features.length) {
-      map.getCanvas().style.cursor = '';
-      map.setPaintProperty('towns', 'circle-radius', 6);
-      return
-    }
-
-    map.setPaintProperty('towns', 'circle-radius', ['match', ['get', 'name'], features[0].properties.name, 10, 6]);
-  });
-
-  map.on("mouseenter", "towns", function () {
-    map.getCanvas().style.cursor = "pointer";
-  });
   map.on("mouseleave", "towns", function () {
     map.getCanvas().style.cursor = "";
+    popup.remove();
+  });
+
+  map.on('click', 'towns', function(e){
+    var features = map.queryRenderedFeatures(e.point);
+    var id = features[0].id;
+    window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
   });
 });
