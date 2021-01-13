@@ -49,27 +49,58 @@ map.on("load", function () {
           "case",
           ["has", "confirmed"],
           [
-            "step",
-            ["get", "confirmed"],
-            "hsl(0, 0%, 82%)",
-            1,
-            "#ffc6c6",
-            2,
-            "#ff9999",
-            3,
-            "#ff5e5e",
-            4,
-            "#ff2b2b",
-            8,
-            "hsl(0, 0%, 17%)",
-            9,
-            "#000000",
+              "step",
+              ["get", "confirmed"],
+              "hsl(0, 0%, 82%)",
+              1,
+              "#545454",
+              2,
+              "#ffc6c6",
+              3,
+              "#ff5e5e",
+              4,
+              "#c20d0d",
+              8,
+              "#545454",
+              9,
+              "#000000"
           ],
-          "#990000",
-        ],
+          "!=",
+          ["get", "confirmed"],
+          null,
+          "hsl(160, 100%, 65%)",
+          "#990000"
+      ],
         "circle-radius": 6,
         "circle-stroke-width": 1,
-        "circle-stroke-color": "#fff",
+        "circle-stroke-color": [
+          "case",
+          ["has", "confirmed"],
+          [
+            "step",
+            ["get", "confirmed"],
+            "hsl(0, 0%, 47%)",
+            1,
+            "hsl(0, 28%, 10%)",
+            2,
+            "hsl(0, 100%, 62%)",
+            3,
+            "hsl(0, 100%, 44%)",
+            4,
+            "hsl(0, 88%, 20%)",
+            8,
+            "hsl(0, 0%, 9%)",
+            9,
+            "#000000"
+          ],
+          [
+            "!=",
+            ["get", "confirmed"],
+            ""
+          ],
+          "hsl(160, 100%, 65%)",
+          "#990000"
+        ],
         "circle-opacity": 0.75,
       },
     },
@@ -117,6 +148,8 @@ map.on("load", function () {
     var ordinance = features[0].properties.ordinance;
     var sign = features[0].properties.sign;
 
+    console.log("confirmed is ", confirmed);
+
     popup
       .setLngLat(coordinates)
       .setHTML(
@@ -143,13 +176,14 @@ map.on("load", function () {
   });
 
   function filterMarkers(status) {
+    console.log("status is ", status);
     var statusInt;
 
     switch (status) {
       case "Don't know":
         statusInt = 0;
         break;
-      case "Unlikely":
+      case "Unlikely/Always Biracial":
         statusInt = 1;
         break;
       case "Possible":
@@ -161,10 +195,7 @@ map.on("load", function () {
       case "Surely":
         statusInt = 4;
         break;
-      case "Always Biracial":
-        statusInt = 8;
-        break;
-      case "Black Town or Township":
+      case "Black Town":
         statusInt = 9;
         break;
       case "Clear filter":
