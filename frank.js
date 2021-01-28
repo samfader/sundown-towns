@@ -44,7 +44,16 @@ map.on("load", function () {
       id: "towns",
       type: "circle",
       source: "towns-data",
-      // filter: ['has', 'confirmed'],
+      filter: [
+        "all",
+        [
+          "match",
+          ["get", "showcase"],
+          [0],
+          true,
+          false
+        ]
+      ],
       paint: {
         "circle-color": [
           "case",
@@ -100,6 +109,28 @@ map.on("load", function () {
     "settlement-subdivision-label"
   );
 
+  map.addLayer(
+    {
+      id: "towns-showcase",
+      type: "symbol",
+      source: "towns-data",
+      filter: [
+        "all",
+        [
+          "match",
+          ["get", "showcase"],
+          [1],
+          true,
+          false
+        ]
+      ],
+      "layout": {
+        "icon-image": "Circle-icons-flag",
+        "icon-size": 0.4
+    },
+    }
+  );
+
   var popup = new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: false,
@@ -130,16 +161,17 @@ map.on("load", function () {
 
   // display only features with the 'name' property 'USA'
 
+  // these are the towns that are NOT featured with flags
   map.on("mouseenter", "towns", function (e) {
     map.getCanvas().style.cursor = "pointer";
     var coordinates = e.features[0].geometry.coordinates.slice();
     var features = map.queryRenderedFeatures(e.point);
-    var id = features[0].id;
+    // var id = features[0].id;
     var name = features[0].properties.name;
     var state = features[0].properties.state;
     var confirmed = features[0].properties.confirmed;
-    var ordinance = features[0].properties.ordinance;
-    var sign = features[0].properties.sign;
+    // var ordinance = features[0].properties.ordinance;
+    // var sign = features[0].properties.sign;
 
     console.log("confirmed is ", confirmed);
 
@@ -163,6 +195,43 @@ map.on("load", function () {
   });
 
   map.on("click", "towns", function (e) {
+    var features = map.queryRenderedFeatures(e.point);
+    var id = features[0].id;
+    window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
+  });
+
+  // these are the towns that are featured with flags
+  map.on("mouseenter", "towns-showcase", function (e) {
+    map.getCanvas().style.cursor = "pointer";
+    var coordinates = e.features[0].geometry.coordinates.slice();
+    var features = map.queryRenderedFeatures(e.point);
+    // var id = features[0].id;
+    var name = features[0].properties.name;
+    var state = features[0].properties.state;
+    var confirmed = features[0].properties.confirmed;
+    // var ordinance = features[0].properties.ordinance;
+    // var sign = features[0].properties.sign;
+
+    popup
+      .setLngLat(coordinates)
+      .setHTML(
+        name +
+          ", " +
+          state +
+          "<br>" +
+          `Confirmed: ${confirmedDescription[confirmed]}` +
+          "<br><br>Click for more information"
+      )
+      .addTo(map);
+    // window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
+  });
+
+  map.on("mouseleave", "towns-showcase", function () {
+    map.getCanvas().style.cursor = "";
+    popup.remove();
+  });
+
+  map.on("click", "towns-showcase", function (e) {
     var features = map.queryRenderedFeatures(e.point);
     var id = features[0].id;
     window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
