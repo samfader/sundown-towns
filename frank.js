@@ -44,16 +44,16 @@ map.on("load", function () {
       id: "towns",
       type: "circle",
       source: "towns-data",
-      filter: [
-        "all",
-        [
-          "match",
-          ["get", "showcase"],
-          [0],
-          true,
-          false
-        ]
-      ],
+      // filter: [
+      //   "all",
+      //   [
+      //     "match",
+      //     ["get", "showcase"],
+      //     [0],
+      //     true,
+      //     false
+      //   ]
+      // ],
       paint: {
         "circle-color": [
           "case",
