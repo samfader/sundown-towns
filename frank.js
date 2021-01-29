@@ -125,7 +125,7 @@ map.on("load", function () {
         ]
       ],
       "layout": {
-        "icon-image": "Circle-icons-flag",
+        "icon-image": "flag",
         "icon-size": 0.4
     },
     }
