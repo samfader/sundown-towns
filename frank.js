@@ -267,8 +267,10 @@ map.on("load", function () {
 
     // if clear is cliked, clear, otherwise filter
     if (statusInt == 10) {
+      map.setLayoutProperty('towns-showcase', 'visibility', 'visible');
       map.setFilter("towns", null);
     } else {
+      map.setLayoutProperty('towns-showcase', 'visibility', 'none');
       map.setFilter("towns", ["==", ["get", "confirmed"], statusInt]);
     }
   }
