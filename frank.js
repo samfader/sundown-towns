@@ -126,7 +126,7 @@ map.on("load", function () {
       ],
       "layout": {
         "icon-image": "flag",
-        "icon-size": 0.4
+        "icon-size": 0.3
     },
     }
   );
@@ -182,7 +182,7 @@ map.on("load", function () {
           ", " +
           state +
           "<br>" +
-          `Confirmed: ${confirmedDescription[confirmed]}` +
+          `Sundown? ${confirmedDescription[confirmed]}` +
           "<br><br>Click for more information"
       )
       .addTo(map);
@@ -219,7 +219,7 @@ map.on("load", function () {
           ", " +
           state +
           "<br>" +
-          `Confirmed: ${confirmedDescription[confirmed]}` +
+          `Sundown? ${confirmedDescription[confirmed]}` +
           "<br><br>Click for more information"
       )
       .addTo(map);
