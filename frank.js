@@ -9,7 +9,7 @@ var map = new mapboxgl.Map({
   dragRotate: false,
   maxBounds: [
     [-135.78125, 22.367113562651262],
-    [-71.17187499999999, 50.90303283111257],
+    [-66.17187499999999, 50.90303283111257],
   ],
 });
 
@@ -123,8 +123,7 @@ map.on("load", function () {
       ],
         "circle-opacity": 0.75,
       },
-    },
-    "settlement-subdivision-label"
+    }
   );
 
   map.addLayer(
@@ -190,8 +189,6 @@ map.on("load", function () {
     var confirmed = features[0].properties.confirmed;
     // var ordinance = features[0].properties.ordinance;
     // var sign = features[0].properties.sign;
-
-    console.log("confirmed is ", confirmed);
 
     popup
       .setLngLat(coordinates)
