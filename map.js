@@ -1,6 +1,9 @@
 mapboxgl.accessToken =
   'pk.eyJ1Ijoic2FtZiIsImEiOiJjaWZ3bGhtdjgzMnN1dWdrcnEwZTVieG91In0.DkCY-91coDahKvpH7Z26dw';
 
+const dataUrl =
+  'https://json-loewen-sundown-towns.pantheonsite.io/sundown/database/geojson.php';
+
 const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/samf/ckfguixbm2aee19ppd5s2d36l',
@@ -14,9 +17,6 @@ const map = new mapboxgl.Map({
   ],
 });
 
-let dataUrl =
-  'https://json-loewen-sundown-towns.pantheonsite.io/sundown/database/geojson.php';
-
 map.addControl(
   new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
@@ -25,13 +25,15 @@ map.addControl(
   })
 );
 
-var nav = new mapboxgl.NavigationControl();
-map.addControl(nav, 'top-left');
+map.addControl(
+  new mapboxgl.NavigationControl(), 
+  'top-left'
+);
 
 map.on('load', function () {
-  var legendEl = document.getElementById('legend');
+  const legendEl = document.getElementById('legend');
   legendEl.addEventListener('click', function (e) {
-    var value = e.target.innerHTML;
+    const value = e.target.innerHTML;
     filterMarkers(value);
   });
 
@@ -42,10 +44,9 @@ map.on('load', function () {
 
   map.addLayer(
     {
-      id: 'towns',
+      id: 'sundown-towns',
       type: 'circle',
       source: 'towns-data',
-      // filter: ['has', 'confirmed'],
       paint: {
         'circle-color': [
           'case',
@@ -101,12 +102,12 @@ map.on('load', function () {
     'settlement-subdivision-label'
   );
 
-  var popup = new mapboxgl.Popup({
+  const popup = new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: false,
   });
 
-  var confirmedDescription = {
+  const confirmedDescription = {
     0: 'Don\'t know',
     1: 'Unlikely',
     2: 'Possible',
@@ -129,14 +130,14 @@ map.on('load', function () {
 
   // display only features with the 'name' property 'USA'
 
-  map.on('mouseenter', 'towns', function (e) {
+  map.on('mouseenter', 'sundown-towns', function (e) {
     map.getCanvas().style.cursor = 'pointer';
-    var coordinates = e.features[0].geometry.coordinates.slice();
-    var features = map.queryRenderedFeatures(e.point);
-    var id = features[0].id;
-    var name = features[0].properties.name;
-    var state = features[0].properties.state;
-    var confirmed = features[0].properties.confirmed || 10;
+    const coordinates = e.features[0].geometry.coordinates.slice();
+    const features = map.queryRenderedFeatures(e.point, { layers: ['sundown-towns'] });
+    const id = features[0].id;
+    const name = features[0].properties.name;
+    const state = features[0].properties.state;
+    const confirmed = features[0].properties.confirmed || 10;
 
     popup
       .setLngLat(coordinates)
@@ -151,26 +152,26 @@ map.on('load', function () {
       .addTo(map);
   });
 
-  map.on('mouseleave', 'towns', function () {
+  map.on('mouseleave', 'sundown-towns', function () {
     map.getCanvas().style.cursor = '';
     popup.remove();
   });
 
-  map.on('click', 'towns', function (e) {
-    var features = map.queryRenderedFeatures(e.point);
-    var id = features[0].id;
+  map.on('click', 'sundown-towns', function (e) {
+    const features = map.queryRenderedFeatures(e.point, { layers: ['sundown-towns'] });
+    const id = features[0].id;
     window.open(`https://sundown.tougaloo.edu/sundowntownsshow.php?id=${id}`);
   });
 
   function filterMarkers(status) {
     // if clear is clicked, remove filter, otherwise filter by status
     if (status === 'Clear filter') {
-      return map.setFilter('towns', null); 
+      return map.setFilter('sundown-towns', null); 
     }
 
-    var statusInt = Object.keys(confirmedDescription).find((key) => confirmedDescription[key] === status);
+    const statusInt = Object.keys(confirmedDescription).find((key) => confirmedDescription[key] === status);
     if (statusInt >= 0 && statusInt < 10) {
-      map.setFilter('towns', ['==', ['get', 'confirmed'], parseInt(statusInt)]);
+      map.setFilter('sundown-towns', ['==', ['get', 'confirmed'], parseInt(statusInt)]);
     }
   }
 });
