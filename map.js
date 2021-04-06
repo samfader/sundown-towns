@@ -14,6 +14,17 @@ const confirmedDescription = {
   9: 'Black Town or Township'
 };
 
+function fetchCleanData(url) {
+  return fetch(url)
+    .then((response) => response.text())
+    .then((text) => {
+      // This is necessary because some API responses include 
+      // munged up database warnings
+      const cleanResponse = text.slice(text.indexOf('{'));
+      return JSON.parse(cleanResponse);
+    });
+}
+
 function filterMarkers(status) {
   // if clear is clicked, remove filter, otherwise filter by status
   if (status === 'Clear filter') {
@@ -58,10 +69,13 @@ map.addControl(
   'top-left'
 );
 
-map.on('load', function () {
+map.on('load', async function () {
+
+  const townData = await fetchCleanData(dataUrl); 
+
   map.addSource('towns-data', {
     type: 'geojson',
-    data: dataUrl,
+    data: townData
   });
 
   map.addLayer(
