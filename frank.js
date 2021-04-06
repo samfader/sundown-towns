@@ -110,27 +110,22 @@ map.on('load', async function () {
     },
   });
 
-  map.addLayer(
-    {
-      id: 'towns-showcase',
-      type: 'symbol',
-      source: 'towns-data',
-      filter: [
-        'all',
-        [
-          'match',
-          ['get', 'showcase'],
-          [1],
-          true,
-          false
-        ]
-      ],
-      'layout': {
-        'icon-image': 'flag',
-        'icon-size': 0.3
-    },
+  map.addLayer({
+    id: 'towns-showcase',
+    type: 'symbol',
+    source: 'towns-data',
+    filter: [
+      'match',
+      ['get', 'showcase'],
+      1,
+      true,
+      /* default */ false
+    ],
+    'layout': {
+      'icon-image': 'flag',
+      'icon-size': 0.3
     }
-  );
+  });
 
 
   /*~*~ Map Interactions ~*~*/
