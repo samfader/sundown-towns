@@ -1,5 +1,7 @@
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiamxvZXdlbiIsImEiOiJja2xndmR4bTQ1NXcxMnZ1aXNqaWo4ZHpyIn0.8dx0t2m15JltIuCf25x7FA";
+mapboxgl.accessToken = "pk.eyJ1IjoiamxvZXdlbiIsImEiOiJja2xndmR4bTQ1NXcxMnZ1aXNqaWo4ZHpyIn0.8dx0t2m15JltIuCf25x7FA";
+  
+const dataUrl = "https://json-loewen-sundown-towns.pantheonsite.io/sundown/database/geojson.php?";
+
 var map = new mapboxgl.Map({
   container: "map",
   style: "mapbox://styles/jloewen/cklgvceam6dr117rz6clq3pf1",
@@ -13,8 +15,17 @@ var map = new mapboxgl.Map({
   ],
 });
 
-let dataUrl =
-  "https://json-loewen-sundown-towns.pantheonsite.io/sundown/database/geojson.php?";
+function fetchCleanData(url) {
+  return fetch(url)
+    .then((response) => response.text())
+    .then((text) => {
+      // This is necessary because some API responses include 
+      // munged up database warnings
+      const cleanResponse = text.slice(text.indexOf('{'));
+      return JSON.parse(cleanResponse);
+    });
+}
+
 
 map.addControl(
   new MapboxGeocoder({
@@ -27,16 +38,18 @@ map.addControl(
 var nav = new mapboxgl.NavigationControl();
 map.addControl(nav, "top-left");
 
-map.on("load", function () {
+map.on("load", async function () {
   var legendEl = document.getElementById("legend");
   legendEl.addEventListener("click", function (e) {
     var value = e.target.innerHTML;
     filterMarkers(value);
   });
 
+  const townData = await fetchCleanData(dataUrl);
+
   map.addSource("towns-data", {
     type: "geojson",
-    data: dataUrl,
+    data: townData,
   });
 
   map.addLayer(
